@@ -465,7 +465,7 @@ function Home() {
           <span className={classes.welcomeText}>
             Welcome:{" "}
             <span className={classes.username}>
-              {userData.user?.display_name || "Guest"}
+              {userData.user?.username || userData.user?.display_name || "Guest"}
             </span>
           </span>
 

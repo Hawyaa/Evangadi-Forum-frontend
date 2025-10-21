@@ -52,16 +52,16 @@ function App() {
 
   return (
     <AppState.Provider value={{ user, setUser }}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/question" element={<Question />} />
-        <Route path="/question/:id" element={<Answer />} />
-        <Route path="/allquestion" element={<QuestionList />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+<Routes>
+  <Route path="/login" element={<Login />} />
+  <Route path="/register" element={<Register />} />
+  <Route path="/" element={<Home />} />
+  <Route path="/home" element={<Home />} />
+  <Route path="/question" element={<Question />} />
+  <Route path="/question/:id" element={<Answer />} /> {/* This should be your answer page */}
+  <Route path="/allquestion" element={<QuestionList />} />
+  <Route path="*" element={<NotFound />} />
+</Routes>
     </AppState.Provider>
   );
 }
