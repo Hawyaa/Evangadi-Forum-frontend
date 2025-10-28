@@ -5,6 +5,7 @@ import axios from "../../axiosConfig";
 import { UserContext } from "../../component/Dataprovider/DataProvider";
 import Layout from "../../component/Layout/Layout";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { ButtonSpinner } from "../../component/LoadingSpinner/LoadingSpinner";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Login = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -24,17 +26,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
+    setLoading(true);
 
     if (!formData.email || !formData.password) {
       setErrorMsg("Please fill in all fields");
+      setLoading(false);
       return;
     }
 
     try {
       const response = await axios.post("api/user/login", formData);
 
-      if (response.data.message === "User login successful") {
-        localStorage.setItem("token", response.data.token);
+      if (response.data.message === 'User login successful') {
+        localStorage.setItem('token', response.data.token);
         setUserData({ ...(userData || {}), token: response.data.token });
         navigate("/home");
       } else {
@@ -44,6 +48,8 @@ const Login = () => {
       setErrorMsg(
         error.response?.data?.message || "Invalid credentials or server error"
       );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -69,7 +75,7 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                 />
-                <div>
+                <div className={styles.password_container}>
                   <input
                     type={showPassword ? "text" : "password"}
                     name="password"
@@ -89,7 +95,6 @@ const Login = () => {
                              
                   </span>
                 </div>
-
                 <div className={styles.loginFooter}>
                   <Link to="/forgot-password" className={styles.forgetLink}>
                     Forgot password?          
@@ -98,9 +103,14 @@ const Login = () => {
 
                 {errorMsg && <p className={styles.error}>{errorMsg}</p>}
 
-                <button type="submit" className={styles.loginButton}>
+                <ButtonSpinner
+                  type="submit"
+                  loading={loading}
+                  className={styles.loginButton}
+                  disabled={loading}
+                >
                   Login
-                </button>
+                </ButtonSpinner>
               </form>
             </div>
           </div>

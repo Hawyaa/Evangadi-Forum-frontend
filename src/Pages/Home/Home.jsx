@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import Layout from "../../component/Layout/Layout";
-import classes from "./Home.module.css";
+import classes from "./home.module.css";
 import { Link, useNavigate } from "react-router-dom";
 import QuestionList from "../Questionlist/QuestionList";
 import { UserContext } from "../../component/Dataprovider/DataProvider";
 import axios from "../../axiosConfig"; // Import axios
+import LoadingSpinner from "../../component/LoadingSpinner/LoadingSpinner";
 
 function Home() {
   const [userData, setUserData] = useContext(UserContext); // Get setUserData if available for context update
@@ -72,18 +73,19 @@ function Home() {
   if (loading)
     return (
       <Layout>
-        <div className={classes.container}>Loading questions...</div>
+        <div className={classes.container}>
+          <LoadingSpinner text="Loading questions..." />
+        </div>
       </Layout>
     );
   // if an error occurred after loading
   if (error)
     return (
       <Layout>
-        <div
-          className={classes.container}
-          style={{ color: "red", textAlign: "center" }}
-        >
-          {error}
+        <div className={classes.container}>
+          <div className="alert alert-danger text-center">
+            {error}
+          </div>
         </div>
       </Layout>
     );

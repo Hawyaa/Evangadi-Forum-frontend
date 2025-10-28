@@ -1,29 +1,34 @@
 import axios from "axios";
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { UserContext } from "../../context/UserContext";
+// import { UserContext } from "../../context/UserContext";
 import classes from "./answer.module.css";
 
 const AnswerQuestion = ({ questionId }) => {
   const [userData] = useContext(UserContext);
   const [form, setForm] = useState({ answer: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) setError(""); // Clear error on input change
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!userData?.user?.id) {
-      alert("Please log in to post an answer.");
+      setError("Please log in to post an answer.");
+      setSuccess("");
       navigate("/login");
       return;
     }
 
     if (!form.answer.trim()) {
-      alert("Please enter your answer before submitting.");
+      setError("Please enter your answer before submitting.");
+      setSuccess("");
       return;
     }
 
@@ -41,10 +46,15 @@ const AnswerQuestion = ({ questionId }) => {
       );
 
       setForm({ answer: "" });
-      alert("Your answer was posted successfully!");
+      setError("");
+      setSuccess("Your answer was posted successfully!");
+
+      // Auto-clear success message after 3 seconds
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Problem posting answer:", err);
-      alert("Something went wrong. Please try again.");
+      setError("Something went wrong. Please try again.");
+      setSuccess("");
     }
   };
 
@@ -57,10 +67,13 @@ const AnswerQuestion = ({ questionId }) => {
           Go to Question Page
         </Link>
 
+        {error && <p className={classes.error}>{error}</p>}
+        {success && <p className={classes.success}>{success}</p>}
+
         <textarea
           onChange={handleChange}
           value={form.answer}
-          className={classes.answerInput}
+          className={`${classes.answerInput} ${error ? classes.inputError : ""}`}
           placeholder="Your Answer..."
           name="answer"
         />
@@ -74,3 +87,6 @@ const AnswerQuestion = ({ questionId }) => {
 };
 
 export default AnswerQuestion;
+
+
+

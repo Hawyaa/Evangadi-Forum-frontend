@@ -1,14 +1,16 @@
-// 
-
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "../../axiosConfig";
 import Layout from "../../component/Layout/Layout"; // Assuming you use Layout
-import classes from "./SingleQuestion.module.css"; // New CSS module
+import { UserContext } from "../../component/Dataprovider/DataProvider";
+import classes from "../../Pages/Answer/answer.module.css"; // Using answer CSS module
 
 const SingleQuestion = () => {
   // Renamed from QuestionDetail
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [userData] = useContext(UserContext);
+  const user = userData?.user;
   const [question, setQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [newAnswer, setNewAnswer] = useState("");
@@ -42,7 +44,7 @@ const SingleQuestion = () => {
       const res = await axios.get(`api/answer/${id}`, {
         headers: { Authorization: "Bearer " + token },
       });
-      setAnswers(res.data);
+      setAnswers(res.data.answers || []);
     } catch (err) {
       console.error("Error fetching answers:", err);
       setAnswers([]);
@@ -64,18 +66,33 @@ const SingleQuestion = () => {
 
     try {
       const token = getToken();
-      const res = await axios.post(
+      await axios.post(
         "api/answer",
         { questionid: id, answer: newAnswer },
         { headers: { Authorization: "Bearer " + token } }
       );
       setNewAnswer("");
-      // Add the new answer to the state immediately instead of re-fetching everything
-      // NOTE: This assumes res.data is the new answer object including 'username' and 'answerid'
-      setAnswers((prev) => [...prev, res.data]);
+      setError(null);
+      // Refresh answers after posting
+      fetchAnswers();
     } catch (err) {
       console.error("Error submitting answer:", err);
       setError("Failed to submit answer");
+    }
+  };
+
+  // Delete answer functionality
+  const handleDeleteAnswer = async (answerId) => {
+    if (!window.confirm("Are you sure you want to delete this answer?")) return;
+    try {
+      const token = getToken();
+      await axios.delete(`api/answer/${answerId}`, {
+        headers: { Authorization: "Bearer " + token },
+      });
+      setAnswers((prev) => prev.filter((a) => a.answer_id !== answerId));
+    } catch (err) {
+      console.error("Error deleting answer:", err);
+      setError("Failed to delete answer");
     }
   };
 
@@ -95,6 +112,7 @@ const SingleQuestion = () => {
   return (
     <Layout>
       <div className={classes.container}>
+        {error && <p className={classes.error}>{error}</p>}
         {/* ========================================
         Question Section
         ========================================
@@ -140,21 +158,36 @@ const SingleQuestion = () => {
             </p>
           ) : (
             answers.map((a) => (
-              <div key={a.answerid} className={classes.answerCard}>
-                {/* Answer Profile Group */}
-                <div className={classes.profileGroup}>
-                  <div className={classes.profileIcon}>
-                    <i className="fa fa-user-circle"></i>
-                  </div>
-                  <p className={classes.usernameDisplay}>
-                    {a.username || "Anonymous"}
-                  </p>
+              <div key={a.answer_id} className={classes.answerItem}>
+                <div className={classes.answerHeader}>
+                  <span className={classes.answerAuthor}>
+                    {a.user_name || "Anonymous"}
+                  </span>
+                  <span className={classes.answerDate}>
+                    {new Date(a.created_at || Date.now()).toLocaleDateString()}
+                  </span>
                 </div>
+                <p className={classes.answerText}>{a.content}</p>
 
-                {/* Answer Content */}
-                <div className={classes.answerContent}>
-                  <p>{a.answer}</p>
-                </div>
+                {/* Edit and Delete buttons for answer owner - responsive */}
+                {user && user.userid === a.user_id && (
+                  <div className="mt-2">
+                    <div className="d-flex flex-wrap gap-2">
+                      <button
+                        className="btn btn-outline-primary rounded px-3"
+                        onClick={() => navigate(`/answers/edit/${a.answer_id}`)}
+                      >
+                        Edit Answer
+                      </button>
+                      <button
+                        className="btn btn-outline-danger rounded px-3"
+                        onClick={() => handleDeleteAnswer(a.answer_id)}
+                      >
+                        Delete Answer
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))
           )}
@@ -164,18 +197,18 @@ const SingleQuestion = () => {
         Add New Answer Form
         ========================================
       */}
-        <div className={classes.newAnswerContainer}>
-          <h5 className={classes.newAnswerHeader}>Answer The Question</h5>
-          <form onSubmit={handleSubmit} className={classes.answerForm}>
+        <div className="mt-4">
+          <h5>Your Answer</h5>
+          <form onSubmit={handleSubmit}>
             <textarea
-              className={classes.answerTextarea}
-              rows="5"
+              className="form-control mb-3"
+              rows="4"
               value={newAnswer}
               onChange={(e) => setNewAnswer(e.target.value)}
               placeholder="Write your answer..."
             ></textarea>
-            <button className={classes.postAnswerButton} type="submit">
-              Post Your Answer
+            <button className="btn btn-warning rounded px-4" type="submit">
+              Post Answer
             </button>
           </form>
         </div>

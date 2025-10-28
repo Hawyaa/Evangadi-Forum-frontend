@@ -26,6 +26,13 @@
   flex: 1;
   padding: 20px;
   position: relative;
+
+}
+.loginRight h2{
+  background: linear-gradient(to right, #fd5310, #000); 
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
 }
 
 /* For the Login Section */
@@ -94,12 +101,16 @@
 .loginButton:hover {
   background-color: #3f489b;
 }
+.password_container {
+  position: relative;
+}
 
 .eye_icon {
   position: absolute;
-  right: 130px; /* Adjusted for better alignment */
-  top: 55%; /* Centered vertically */
+  right: 5px; /* Adjusted for better alignment */
+  top: 50%; /* Centered vertically */
   transform: translateY(-50%); /* Centered vertically */
+  padding-bottom: 20px;
   cursor: pointer;
   font-size: 20px;
   color: gray;
@@ -153,3 +164,7 @@
 .aboutButton:hover {
   background-color: #e66b1e;
 }
+
+
+
+ 

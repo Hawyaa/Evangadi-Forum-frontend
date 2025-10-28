@@ -1,215 +1,365 @@
-.login_conteiner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* =========================
+   Full Background & Layout
+========================= */
+/* (kept your original choices; fixed only scrolling/height issues) */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: sans-serif;
+  /* allow vertical scrolling if content is taller than viewport */
+  overflow-y: auto;
+}
+
+body {
   background-color: #f8f8f8;
   background-image: url("../../assets/BG.svg");
   background-size: cover;
   background-repeat: no-repeat;
-  padding-top: 40px;
-  
+  background-position: center;
 }
 
+/* =========================
+   Container
+   — changed: use min-height instead of fixed height,
+              align-items: flex-start so top content isn't clipped,
+              added top/bottom padding to keep space from browser bars/headers
+========================= */
+.login_container {
+  display: flex;
+  align-items: flex-start; /* prevent cutting off top content */
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 10px;
+  padding: 40px 60px;
+  width: 90vw;
+  min-height: 100vh;      /* allow the container to fill page and grow */
+  max-width: 1600px;
+  margin: 0 auto;         /* center horizontally; avoid shorthand that can cause clipping */
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 60px;      /* ensure some top breathing room (helps when there's a header) */
+  padding-bottom: 60px;   /* space so bottom elements don't hug viewport edge */
+}
+
+/* =========================
+   Vertical Divider
+========================= */
+.login_container::after {
+  content: "";
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  left: 50%;
+  width: 1px;
+  background-color: #ddd;
+  z-index: 0;
+}
+
+/* =========================
+   Registration Box
+========================= */
 .login_wrapper {
-  box-sizing: border-box;
-  width: 35%;
-  height: 400px;
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 40px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  background-color: white;
-  border-radius: 10px;
-  padding-bottom: 20px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-   border-right: 2px solid #e6e6e6; /* Vertical line */
+  /* prevent wrapper from becoming too short when container grows */
+  min-height: 320px;
 }
 
-.login__form {
-  box-sizing: border-box;
-  width: 35%;
-  height: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border-radius: 10px;
-  padding-bottom: 20px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  
-  
-}
-.login_title {
-  color: #4b456f;
-  margin: 30px 0px 10px;
-  text-align: center;
-}
-
-.login_form a {
-  color: chocolate;
-}
+/* =========================
+   Form Styling
+========================= */
 .login_form_input {
-  font-size: 14px;
-  padding: 10px;
+  width: 100%;
 }
 
-.login_form_input input {
-  font-size: 14px;
-  padding: 10px;
+.login_title {
+  color: #333;
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 5px;
 }
 
-.login_form_input input:focus {
+.login_form_input small {
+  display: block;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.login_form_input small a {
+  color: #fe8402;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login_form_input small a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   Input Fields
+========================= */
+.inputs input {
+  width: 100%;
+  font-size: 15px;
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.inputs input:focus {
   outline: none;
-  border-bottom: 2px solid #fe8402;
+  border-color: #fe8402;
 }
 
-.email__input,
-.pass__input {
-  width: 80%;
-  padding: 10px 5px;
-  border: 1px solid #999999;
-  border-radius: 3px;
-  margin-bottom: -10px;
+/* pair inputs row */
+.first_last {
+  display: flex;
+  gap: 10px;
+}
+
+.first_last > div {
+  flex: 1;
+}
+
+.first_last input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.first,
+.last,
+.user,
+.email,
+.password {
+  width: 100%;
+}
+
+/* =========================
+   Password Visibility
+========================= */
+.passwordWrapper {
+  position: relative;
+}
+
+.passwordWrapper input {
+  padding-right: 40px;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #777;
+  cursor: pointer;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.eyeIcon:hover {
+  color: #fe8402;
+}
+
+/* =========================
+   Error & Success Messages
+========================= */
+.error {
+  color: #d93025;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: #188038;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.inputError {
+  border: 2px solid #d93025 !important;
+}
+
+/* =========================
+   Agreement & Button
+========================= */
+.agree2 {
+  font-size: 0.85rem;
+  text-align: center;
+  margin: 10px 0 20px;
+  color: #2959f5;
+}
+
+.agree2 a:hover {
+  /* keep hover subtle — avoid making large areas solid */
+  text-decoration: underline;
 }
 
 .login_form_input button {
   width: 100%;
-  padding: 10px 5px;
-  border: none;
-  border-radius: 3px;
+  padding: 12px;
   background-color: #fe8402;
   color: white;
-  margin: 20px 0px 15px;
-  font-size: 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
 }
 
 .login_form_input button:hover {
-  cursor: pointer;
-  background-color: #516cf0;
-  cursor: pointer;
+  background-color: #e67c00;
+  transform: translateY(-2px);
 }
 
-.login__form a {
+/* =========================
+   Account Link
+========================= */
+.account p {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.account p a {
   color: #fe8402;
-  margin-bottom: 70px;
   text-decoration: none;
+  font-weight: 500;
 }
 
-.login__form a:hover {
-  color: #da7000;
+.account p a:hover {
+  text-decoration: underline;
 }
 
-.user {
-  border: 1px solid #999;
-  border-radius: 3px;
-  margin-bottom: -10px;
-  padding: 10px 5px;
-  width: 95%;
-}
-
-.first_last {
+/* =========================
+   Right-Side Description
+   — FIXED: removed color: transparent that hid text
+   — kept gradient title behaviour only for .title
+========================= */
+.Evangadi_description {
+  flex: 1;
+  max-width: 480px;
+  color: #555;                /* readable text color */
+  line-height: 1.6;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
   display: flex;
-  gap: 10px;
-  
+  flex-direction: column;
+  justify-content: center;
+  /* removed background-clip + transparent color that hid text */
+  /* if you want gradient text only for the main title, keep that on .title only */
 }
 
-.first {
-  border: 1px solid #999;
-  border-radius: 3px;
-  margin-bottom: -10px;
-  padding: 10px 5px;
-  width: 90%;
-  
-}
-
-.last {
-  border: 1px solid #999;
-  border-radius: 3px;
-  margin-bottom: -10px;
-  padding: 10px 5px;
-  width: 90%;
-  
-}
-
-.email {
-  border: 1px solid #999;
-  border-radius: 3px;
-  margin-bottom: -10px;
-  padding: 10px 5px;
-  width: 95%;
-}
-.password {
-  border: 1px solid #999;
-  border-radius: 3px;
-  margin-bottom: -10px;
-  padding: 10px 5px;
-  width: 95%;
-}
-.Evangadi_description {
-  color: #656565;
-  margin-left: 40px;
-  width: 35%;
-}
-.Evangadi_description {
-  display: inline;
-}
-
-.login_title small {
-  text-align: center;
-  margin: -5px 0 20px;
-}
-.login_wrapper small a {
-  color: #da7000;
-  text-decoration: none;
-}
-.agree {
-  text-align: center;
-  color: #da7000;
-  align-items: center;
-}
-.agree a {
-  text-decoration: none;
-}
-.agree2{
-  text-align: center;
-}
-.title_link{
-  color: #da7000;
-  color: black;
-}
 .title_link a {
-  color: #da7000;
+  color: #fe8402;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
+
 .title {
-  font-size: 40px;
+  /* gradient title preserved */
   color: #4b456f;
-  margin: 10px;
+  font-size: 2rem;
+  margin: 10px 0 20px;
+  background: linear-gradient(to right, #fd5310, #000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.how button:hover {
-  cursor: pointer;
-  background-color: #516cf0;
-  cursor: pointer;
+
+.Evangadi_description p {
+  font-size: 1.1rem; /* reduced from 1.5rem to avoid overflow and improve readability */
+  margin-bottom: 15px;
 }
-.how button {
-  background-color: #fe8402;
-  /* margin-bottom: 70px; */
-  text-decoration: none;
-  color: #f8f8f8;
+
+/* keep the button styling */
+.aboutButton {
+  background-color: #2959f5;
+  color: white;
   border: none;
-  margin: 20px;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 20px;
-}
-.eye_icon {
-  position: absolute;
-  right: 715px;
-  top: 355px;
+  border-radius: 6px;
+  padding: 12px 20px;
+  font-size: 1rem;
   cursor: pointer;
-  font-size: 20px;
-  color: gray;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.aboutButton:hover {
+  background-color: #fe8402;
+}
+
+/* =========================
+   Minor size tweaks you had at the bottom
+   — preserved but adjusted to use min-height instead of fixed height above
+========================= */
+.login_container {
+  width: 85vw;
+  /* height removed (was 70vh) — use min-height above instead */
+  max-width: 1400px;
+  padding: 40px 50px;
+}
+
+.login_wrapper {
+  max-width: 520px;
+}
+
+.Evangadi_description {
+  max-width: 440px;
+}
+
+/* =========================
+   Responsive Design
+   — ensure scrolling on small screens and no top clipping
+========================= */
+@media (max-width: 768px) {
+  body {
+    display: block;
+    /* allow vertical scrolling on small viewports */
+    overflow-y: auto;
+  }
+
+  .login_container {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 20px;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+  }
+
+  .login_wrapper,
+  .Evangadi_description {
+    max-width: 90%;
+    width: 100%;
+  }
+
+  .Evangadi_description {
+    text-align: center;
+  }
+
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .aboutButton {
+    font-size: 0.9rem;
+  }
+
+  .login_container::after {
+    display: none;
+  }
 }

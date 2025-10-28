@@ -9,13 +9,12 @@ const HowItWorks = () => {
       <section className="hero text-center text-white py-5 bg-primary">
         <div className="container">
           <h1 className="display-5 fw-bold">How Evangadi Forum Works</h1>
-          <p className="lead mt-3">
+          <p className="lead mt-3 text-white">
             Connect, ask, and learn — our community thrives on shared knowledge
             and collaboration.
           </p>
         </div>
       </section>
-
       <section className="guidelines py-5 bg-white">
         <div className="container text-center">
           <h2 className="fw-bold mb-5 text-dark">Getting Started</h2>
@@ -105,7 +104,7 @@ const HowItWorks = () => {
       <section className="cta text-center text-white py-5 bg-dark">
         <div className="container">
           <h2 className="fw-bold">Ready to Contribute?</h2>
-          <p className="mb-4">
+          <p className="mb-4 text-white">
             Join thousands of learners exchanging ideas every day.
           </p>
           <a href="/register" className="btn btn-warning px-4 py-2 fw-semibold">
