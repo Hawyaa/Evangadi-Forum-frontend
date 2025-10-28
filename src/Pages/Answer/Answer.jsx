@@ -27,17 +27,20 @@ const Answer = () => {
   const fetchQuestionAndAnswers = async () => {
     try {
       setLoading(true);
-      setError("");
-      
-      // Fetch question details
-      const questionResponse = await axios.get(`api/question/${id}`);
-      console.log("Question response:", questionResponse.data);
-      
-      const questionData = questionResponse.data.question || questionResponse.data;
-      setQuestion(questionData);
-      
-      // Fetch answers for this question
-      await fetchAnswers();
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`/api/question/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      setQuestion(response.data.question);
+      // Fetch answers separately since backend doesn't return them with question
+      try {
+        const answersResponse = await axios.get(`/api/answer/${id}`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        setAnswers(answersResponse.data.answers || []);
+      } catch (answerError) {
+        setAnswers([]);
+      }
     } catch (error) {
       console.error("Error fetching question:", error);
       setError("Failed to load question details");
@@ -73,25 +76,24 @@ const Answer = () => {
     }
 
     try {
-      setSubmitting(true);
-
-      // Use the exact field names your backend expects
-      const response = await axios.post("api/answer", {
-        question_id: id,
-        answer: newAnswer
-      });
-
-      console.log("Answer post response:", response.data);
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "/api/answer",
+        {
+          question_id: id,
+          answer: newAnswer,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       
       setNewAnswer("");
       // Refresh answers to show the new one
       await fetchAnswers();
       alert("Answer posted successfully!");
     } catch (error) {
-      console.error("Error posting answer:", error);
-      alert(error.response?.data?.message || "Failed to post answer");
-    } finally {
-      setSubmitting(false);
+      alert("Failed to post answer");
     }
   };
 
@@ -193,7 +195,7 @@ const Answer = () => {
             <textarea
               value={newAnswer}
               onChange={(e) => setNewAnswer(e.target.value)}
-              placeholder="Write your answer here..."
+              placeholder="Post your answers"
               className={classes.answerTextarea}
               rows={6}
               disabled={submitting}
@@ -206,6 +208,26 @@ const Answer = () => {
               {submitting ? "Posting Answer..." : "Post Your Answer"}
             </button>
           </form>
+        </div>
+
+        {/* Existing Answers */}
+        <div className={classes.answersSection}>
+          <h3>{answers.length} Answer{answers.length !== 1 ? 's' : ''}</h3>
+          {answers.length === 0 ? (
+            <p className={classes.noAnswers}>No answers yet. Be the first to answer!</p>
+          ) : (
+            answers.map((answer, index) => (
+              <div key={index} className={classes.answerItem}>
+                <div className={classes.answerHeader}>
+                  <span className={classes.answerAuthor}>{answer.user_name || 'Anonymous'}</span>
+                  <span className={classes.answerDate}>
+                    {new Date().toLocaleDateString()}
+                  </span>
+                </div>
+                <p className={classes.answerText}>{answer.content}</p>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </Layout>

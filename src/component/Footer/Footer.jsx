@@ -1,66 +1,64 @@
-import styles from "./footer.module.css";
-import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa";
+import React from "react";
+import classes from "./footer.module.css";
+import logo from "../images/logo.png";
+import FacebookOutlinedIcon from "@mui/icons-material/FacebookOutlined";
+import InstagramIcon from "@mui/icons-material/Instagram";
+import YouTubeIcon from "@mui/icons-material/YouTube";
+import { Link } from "react-router-dom";
 
-
-const Footer = () => {
+function Footer() {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.logoSection}>
-        <img
-          src="https://evanforum.com/assets/logo-D98Zk6nH.png"
-          alt="Evangadi Logo"
-          className={styles.logoImg}
-        />
+    <>
+      <div className={classes.footer}>
+        <div className={classes.footer_out_container}>
+          <div className={classes.footer_inner_container}>
+            <div className={classes.footer_data}>
+              <div>
+                <div className={classes.footer_icon}>
+                  <img src={logo} />
+                </div>
+                <div className={classes.footer_icon2}>
+                  <p>
+                    <FacebookOutlinedIcon size={35} />
+                  </p>
+                  <p>
+                    <InstagramIcon size={35} />
+                  </p>
 
-        <div className={styles.socials}>
-          <a
-            href="https://web.facebook.com/evangaditech?_rdc=1&_rdr#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.icon}
-          >
-            <FaFacebookF />
-          </a>
-          <a
-            href="https://www.instagram.com/evangaditech/#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.icon}
-          >
-            <FaInstagram />
-          </a>
-          <a
-            href="https://www.youtube.com/@EvangadiTech"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.icon}
-          >
-            <FaYoutube />
-          </a>
+                  <YouTubeIcon size={35} />
+                </div>
+              </div>
+              <div>
+                <h3>Useful Link</h3>
+                <ul>
+                  <li>
+                    <Link to="/how-it-works">How it works</Link>
+                  </li>
+                  <li>
+                    <Link to="/terms-and-conditions">Terms of Service</Link>
+                  </li>
+                  <li>
+                    <Link to="/PrivacyPolicy">Privacy policy</Link>
+                  </li>
+                  
+                </ul>
+              </div>
+              <div>
+                <h3>Contact Info</h3>
+                <ul>
+                  <li>Contact Info</li>
+                  <li>support@evangadi.com</li>
+                  <li>+1-202-386-2702</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <div className={classes.copy_write}></div>
       </div>
-      <div className={styles.linksSection}>
-        <h4>Useful Link</h4>
-        <ul>
-          <li>
-            <a href="/how-it-works">How it works</a>
-          </li>
-          <li>
-            <a href="/terms-of-service">Terms of Service</a>
-          </li>
-          <li>
-            <a href="/privacy-policy">Privacy policy</a>
-          </li>
-        </ul>
-      </div>
-      <div className={styles.contactSection}>
-        <h4>Contact Info</h4>
-        <p>Evangadi Networks</p>
-        <p>support@evangadi.com</p>
-        <p>+1-202-386-2702</p>
-      </div>
-    </footer>
+    </>
   );
-};
+}
 
 export default Footer;

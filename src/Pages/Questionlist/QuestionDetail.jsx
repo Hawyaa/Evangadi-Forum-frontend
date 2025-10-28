@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "../../axiosConfig"
+import axios from "../../axiosConfig";
+import classes from "../../Pages/Answer/answer.module.css";
 
 const QuestionDetail = () => {
-  const {id} = useParams(); // Extract the question ID from the URL
+  const { id } = useParams(); // Extract the question ID from the URL
   const [question, setQuestion] = useState(null); // Question details
   const [answers, setAnswers] = useState([]); // list of answers
   const [newAnswer, setNewAnswer] = useState(""); // new answer input
   const [error, setError] = useState(null); // error message
   const [loading, setLoading] = useState(true); // loading state
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
 
   // fetch question details
   const fetchQuestion = async () => {
@@ -17,7 +22,9 @@ const QuestionDetail = () => {
       const res = await axios.get(`api/question/${id}`, {
         headers: { Authorization: "Bearer " + token },
       });
-      setQuestion(res.data);
+      setQuestion(res.data.question);
+      setEditedTitle(res.data.question.title);
+      setEditedDescription(res.data.question.content);
     } catch (err) {
       console.error("Error fetching question:", err);
       setError("Failed to load question"); // Display an error message on failure
@@ -31,7 +38,7 @@ const QuestionDetail = () => {
       const res = await axios.get(`api/answer/${id}`, {
         headers: { Authorization: "Bearer " + token },
       });
-      setAnswers(res.data);
+      setAnswers(res.data.answers || []);
     } catch (err) {
       console.error("Error fetching answers:", err);
       setAnswers([]); // clear answers on error
@@ -65,6 +72,25 @@ const QuestionDetail = () => {
       setError("Failed to submit answer"); // show error
     }
   };
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem("auth-token");
+      await axios.put(
+        `api/question/${id}`,
+        {
+          title: editedTitle,
+          description: editedDescription,
+        },
+        { headers: { Authorization: "Bearer " + token } }
+      );
+      setIsEditing(false);
+      fetchQuestion(); // Refresh question details
+    } catch (err) {
+      console.error("Error updating question:", err);
+      setError("Failed to update question");
+    }
+  };
 
   if (loading) return <div>Loading...</div>; // show loading spinner/text
   if (error) return <div className="alert alert-danger">{error}</div>; // show error
@@ -74,11 +100,48 @@ const QuestionDetail = () => {
       {question && (
         <>
           {/* Display question */}
-          <h2 className="mb-3">{question.title}</h2>
-          <p>{question.description}</p>
-          {question.tag && <p><strong>Tag:</strong> {question.tag}</p>}
-          <p className="text-muted">Asked by {question.username}</p>
-          <hr />
+          {!isEditing ? (
+            <>
+              <h2 className="mb-3">{question.title}</h2>
+              <p>{question.content}</p>
+              <p className="text-muted">Asked by : {question.user_id}</p>
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => setIsEditing(true)}
+              >
+                Edit Question
+              </button>
+              <hr />
+            </>
+          ) : (
+            <form onSubmit={handleEditSubmit}>
+              <h4>Edit Question</h4>
+              <input
+                type="text"
+                className="form-control mb-2"
+                value={editedTitle}
+                onChange={(e) => setEditedTitle(e.target.value)}
+                placeholder="Title"
+              />
+              <textarea
+                className="form-control mb-2"
+                rows="4"
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                placeholder="Description"
+              ></textarea>
+              <button className="btn btn-success me-2" type="submit">
+                Save Changes
+              </button>
+              <button
+                className="btn btn-secondary"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </button>
+              <hr />
+            </form>
+          )}
         </>
       )}
 
@@ -86,12 +149,21 @@ const QuestionDetail = () => {
       <div className="mt-4">
         <h4>Answers</h4>
         {answers.length === 0 ? (
-          <p>No answers yet. Be the first to reply!</p> // if no answers
+          <p className={classes.noAnswers}>
+            No answers yet. Be the first to answer!
+          </p>
         ) : (
-          answers.map((a) => (
-            <div key={a.answerid} className="border rounded p-3 mb-3">
-              <p>{a.answer}</p>
-              <small className="text-muted">By {a.username}</small>
+          answers.map((answer, index) => (
+            <div key={index} className={classes.answerItem}>
+              <div className={classes.answerHeader}>
+                <span className={classes.answerAuthor}>
+                  {answer.user_name || "Anonymous"}
+                </span>
+                <span className={classes.answerDate}>
+                  {new Date().toLocaleDateString()}
+                </span>
+              </div>
+              <p className={classes.answerText}>{answer.content}</p>
             </div>
           ))
         )}

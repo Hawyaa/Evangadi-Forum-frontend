@@ -3,8 +3,9 @@ import axios from "axios";
 import { getToken, removeToken } from "./utils/tokenHelper";
 
 const axiosBase = axios.create({
-  baseURL: "http://forumevangadi.natesirak.com",
-});
+  // baseURL:"http://localhost:2025",
+  baseURL:"https://forumevangadibackend.natesirak.com",
+ });
 
 // Add token to all requests automatically
 axiosBase.interceptors.request.use(
@@ -34,10 +35,3 @@ axiosBase.interceptors.response.use(
 );
 
 export default axiosBase;
-// import axios from "axios";
-// const axiosBase = axios.create({
-//   // baseURL: "http://localhost:2025/api",
-//   baseURL: "http://forumevangadi.natesirak.com",
-//   // baseURL: " http://localhost:2025",
-// });
-// export default axiosBase;

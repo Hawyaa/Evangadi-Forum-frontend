@@ -1,15 +1,12 @@
-import { useRef, useState } from "react";
-import axiosBase from "../../axiosConfig";
-import { useNavigate, Link } from "react-router-dom";
+import { useRef } from "react";
+import classes from "./register.module.css";
+import axios from "../../axiosConfig";
+import { Link, useNavigate } from "react-router-dom";
 import Layout from "../../component/Layout/Layout";
-import styles from "./register.module.css";
-import { setToken } from "../../utils/tokenHelper"; // Import the token helper
 
 function Register() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const userNameDom = useRef();
+  const usernameDom = useRef();
   const firstnameDom = useRef();
   const lastnameDom = useRef();
   const emailDom = useRef();
@@ -17,188 +14,134 @@ function Register() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setIsLoading(true);
-    setErrorMsg('');
-
-    const usernameValue = userNameDom.current.value;
+    const usernameValue = usernameDom.current.value;
     const firstValue = firstnameDom.current.value;
     const lastValue = lastnameDom.current.value;
     const emailValue = emailDom.current.value;
     const passValue = passwordDom.current.value;
 
-    if (!usernameValue || !firstValue || !lastValue || !emailValue || !passValue) {
-      setErrorMsg("Please provide all required information");
-      setIsLoading(false);
+    if (
+      !usernameValue ||
+      !firstValue ||
+      !lastValue ||
+      !emailValue ||
+      !passValue
+    ) {
+      alert("Please provide all required information");
       return;
     }
 
-    // Log data for debugging
-    console.log("Registration attempt:", {
-      username: usernameValue,
-      first_name: firstValue,
-      last_name: lastValue,
-      email: emailValue,
-    });
-
     try {
-      const response = await axiosBase.post("api/user/register", {
+      await axios.post("api/user/register", {
         username: usernameValue,
         first_name: firstValue,
         last_name: lastValue,
         email: emailValue,
         password: passValue,
       });
-      
-      console.log("Registration successful:", response.data);
-      
-      // If your API returns a token on registration (auto-login), use it
-      if (response.data.token) {
-        setToken(response.data.token);
-        alert("Registration successful! You are now logged in.");
-        navigate("/home");
-      } else {
-        alert("Registration successful. Please log in.");
-        navigate("/login");
-      }
+      alert("register successfull. please login");
+      navigate("/login");
     } catch (error) {
-      console.error("Registration error:", error);
-      
-      // Enhanced error handling
-      if (error.response) {
-        const status = error.response.status;
-        const serverMessage = error.response?.data?.message;
-        
-        switch (status) {
-          case 409:
-            setErrorMsg(serverMessage || "User already exists! Please try logging in or use a different email/username.");
-            // Clear the form fields that might be duplicates
-            if (serverMessage?.toLowerCase().includes('email')) {
-              emailDom.current.value = "";
-              emailDom.current.focus();
-            } else if (serverMessage?.toLowerCase().includes('username')) {
-              userNameDom.current.value = "";
-              userNameDom.current.focus();
-            }
-            break;
-            
-          case 400:
-            setErrorMsg(serverMessage || "Invalid data provided. Please check your information and try again.");
-            break;
-            
-          case 401:
-            setErrorMsg(serverMessage || "Authentication failed. Please try again.");
-            break;
-            
-          case 500:
-            setErrorMsg(serverMessage || "Server error. Please try again later.");
-            break;
-            
-          default:
-            setErrorMsg(serverMessage || "Registration failed. Please try again.");
-        }
-      } else if (error.request) {
-        // Network error - no response received
-        setErrorMsg("Network error. Please check your internet connection and try again.");
-        console.error("Network error:", error.request);
-      } else {
-        // Other errors
-        setErrorMsg("Something went wrong! Please try again.");
-        console.error("Error:", error.message);
-      }
-    } finally {
-      setIsLoading(false);
+      alert("something went wrong!");
+      // console.log(error.response);
     }
   }
 
   return (
     <Layout>
-      <section className={styles.registerSection}>
-        <div className={styles.registerContainer}>
-          <h2 className={styles.registerTitle}>Create Account</h2>
-          <p className={styles.registerSubtitle}>
-            Already have an account? <Link to="/login">Sign in</Link>
+      <section className={classes.login_conteiner}>
+        <div className={classes.login_wrapper}>
+          <div className={classes.login_form}>
+            <form onSubmit={handleSubmit} className={classes.login_form_input}>
+              <h1 className={classes.login_title}>Join the network</h1>
+              <small>
+                Already have an account?<Link to="/login"> Sign in</Link>
+              </small>
+              <div className={classes.inputs}>
+                <div>
+                  <input
+                    className={classes.user}
+                    ref={usernameDom}
+                    type="text"
+                    placeholder="userName"
+                  />
+                </div>
+                <br />
+                <div className={classes.first_last}>
+                  <div>
+                    <input
+                      className={classes.first}
+                      ref={firstnameDom}
+                      type="text"
+                      placeholder="firs tName"
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      className={classes.last}
+                      ref={lastnameDom}
+                      type="text"
+                      placeholder="last Name"
+                    />
+                  </div>
+                </div>
+                <br />
+                <div>
+                  <input
+                    className={classes.email}
+                    ref={emailDom}
+                    type="email"
+                    placeholder="email"
+                  />
+                </div>
+                <br />
+                <div>
+                  <input
+                    className={classes.password}
+                    ref={passwordDom}
+                    type="password"
+                    placeholder="passWord"
+                  />
+                  
+                </div>
+                <br />
+                <div className={classes.agree2}>
+                  <small>
+                    I agree to the <Link> privacy policy</Link>
+                    <span>and</span> <Link>terms of service.</Link>
+                  </small>
+                </div>
+               
+
+                <button type="submit">Agree and Join</button>
+                <p className={classes.agree}>
+                  <Link to="/login">Already have an account?</Link>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div className={classes.Evangadi_description}>
+          <small className={classes.title_link}>
+            <Link>About</Link>
+          </small>
+          <h2 className={classes.title}>Evangadi Networks</h2>
+          <p className={classes}>
+            No matter what stage of life you are in, whether you’re just
+            starting elementary school or being promoted to CEO of a Fortune 500
+            company, you have much to offer to those who are trying to follow in
+            your footsteps.
           </p>
-          
-          <form onSubmit={handleSubmit} className={styles.registerForm}>
-            <div className={styles.formGroup}>
-              <span className={styles.label}>User Name</span>
-              <input 
-                ref={userNameDom} 
-                type="text" 
-                placeholder="User Name" 
-                className={styles.input}
-                required
-                disabled={isLoading}
-                autoComplete="username"
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <span className={styles.label}>First Name</span>
-              <input
-                ref={firstnameDom}
-                type="text"
-                placeholder="First Name"
-                className={styles.input}
-                required
-                disabled={isLoading}
-                autoComplete="given-name"
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <span className={styles.label}>Last Name</span>
-              <input
-                ref={lastnameDom}
-                type="text"
-                placeholder="Last Name"
-                className={styles.input}
-                required
-                disabled={isLoading}
-                autoComplete="family-name"
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <span className={styles.label}>Email</span>
-              <input 
-                ref={emailDom} 
-                type="email" 
-                placeholder="Email" 
-                className={styles.input}
-                required 
-                disabled={isLoading}
-                autoComplete="email"
-              />
-            </div>
-            
-            <div className={styles.formGroup}>
-              <span className={styles.label}>Password</span>
-              <input
-                ref={passwordDom}
-                type="password"
-                placeholder="Password"
-                className={styles.input}
-                required
-                disabled={isLoading}
-                autoComplete="new-password"
-              />
-            </div>
-
-            {errorMsg && <p className={styles.error}>{errorMsg}</p>}
-            
-            <button 
-              type="submit" 
-              className={styles.registerButton}
-              disabled={isLoading}
-            >
-              {isLoading ? "Creating Account..." : "Create Account"}
-            </button>
-
-            <p className={styles.tipText}>
-              Tip: If you see "User already exists", try a different email or username.
-            </p>
-          </form>
+          <p className="font-p mg-bt-30">
+            Wheather you are willing to share your knowledge or you are just
+            looking to meet mentors of your own, please start by joining the
+            network here
+          </p>
+          <Link to="/how-it-works">
+            <button className={classes.aboutButton}>HOW IT WORKS</button>
+          </Link>
         </div>
       </section>
     </Layout>
